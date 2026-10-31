@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Do you love me?</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rose:#ff4d85; --rose-deep:#e0245e; --blush:#ffd6e3; --cream:#fff8f1; --ink:#5a2238; --soft:#8c5a6e;
+  --bg1:#ffe3ec; --bg2:#fff8f1; --card:rgba(255,255,255,.72); --grey:#f4eef0; --grey-ink:#8a7d82;
+  --p2a:#ffc2d6; --p2b:#ff8fb3; --p2c:#e86a9a;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#ffe9f0; --soft:#f3c4d4; --bg1:#4a1730; --bg2:#2d0f1e; --card:rgba(255,255,255,.1);
+    --grey:#3d2a33; --grey-ink:#cdb8c1; --p2a:#6a1f43; --p2b:#8e2a58; --p2c:#4a1730;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#ffe9f0; --soft:#f3c4d4; --bg1:#4a1730; --bg2:#2d0f1e; --card:rgba(255,255,255,.1);
+  --grey:#3d2a33; --grey-ink:#cdb8c1; --p2a:#6a1f43; --p2b:#8e2a58; --p2c:#4a1730;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{margin:0;height:100%;font-family:'Poppins',system-ui,sans-serif;color:var(--ink);background:var(--bg2);overflow:hidden}
+
+.view{position:fixed;inset:0;overflow-y:auto;display:flex;justify-content:center;align-items:center;
+  padding:calc(24px + env(safe-area-inset-top,0px)) 20px calc(24px + env(safe-area-inset-bottom,0px));
+  opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s linear .9s;z-index:2}
+.view.active{opacity:1;visibility:visible;transition:opacity .9s ease}
+#page1{background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 100%)}
+#page2{background:linear-gradient(170deg,var(--p2a) 0%,var(--p2b) 55%,var(--p2c) 100%);align-items:flex-start}
+
+/* floating hearts */
+.hearts,.sparkles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.heart{position:absolute;bottom:-60px;color:var(--rose);opacity:0;animation:floatUp linear infinite}
+@keyframes floatUp{
+  0%{transform:translateY(0) translateX(0) rotate(-8deg);opacity:0}
+  10%{opacity:.55}
+  50%{transform:translateY(-55vh) translateX(24px) rotate(8deg)}
+  100%{transform:translateY(-120vh) translateX(-18px) rotate(-6deg);opacity:0}
+}
+.sparkle{position:absolute;color:#fff;animation:twinkle ease-in-out infinite;opacity:0}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:.9;transform:scale(1) rotate(45deg)}}
+
+/* card */
+.card{position:relative;width:100%;max-width:440px;text-align:center;background:var(--card);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.7);
+  border-radius:32px;padding:20px 24px 32px;box-shadow:0 20px 50px rgba(224,36,94,.18)}
+.bear{width:190px;max-width:60%;height:auto;margin:0 auto -4px;display:block;animation:peek 4s ease-in-out infinite}
+@keyframes peek{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.script{font-family:'Dancing Script',cursive;font-weight:700;color:var(--rose-deep);margin:0}
+:root[data-theme="dark"] .script{color:#ff8fb3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .script{color:#ff8fb3}}
+h1.script{font-size:2.6rem;line-height:1.1}
+.ask{font-size:2.1rem;font-weight:700;margin:6px 0 26px;line-height:1.15}
+.btns{display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;min-height:64px}
+button{font-family:inherit;cursor:pointer;border:0;border-radius:999px;transition:transform .25s ease,box-shadow .25s ease,left .35s ease,top .35s ease}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.yes{background:linear-gradient(135deg,#ff6b9a,var(--rose));color:#fff;font-weight:700;font-size:1.3rem;padding:16px 40px;
+  animation:glow 1.8s ease-in-out infinite}
+.yes:hover{transform:scale(1.07)}
+@keyframes glow{0%,100%{box-shadow:0 0 12px 2px rgba(255,77,133,.5),0 8px 20px rgba(255,77,133,.35)}
+  50%{box-shadow:0 0 30px 8px rgba(255,77,133,.75),0 8px 26px rgba(255,77,133,.5)}}
+.no{background:var(--grey);color:var(--grey-ink);font-size:.85rem;padding:9px 20px;border:1px solid rgba(0,0,0,.06)}
+.no.dodging{position:fixed;z-index:20}
+
+.oops p{font-size:1.25rem;line-height:1.6;margin:10px 0 24px}
+.oops .big{font-size:3rem;margin:0}
+.reconsider{background:var(--rose);color:#fff;font-weight:600;padding:14px 28px;font-size:1rem}
+.hidden{display:none!important}
+
+/* page 2 */
+.letter{max-width:520px;width:100%;margin:auto;text-align:center;position:relative;z-index:3;padding:10px 0 30px}
+.letter h2.script{font-size:3rem;color:#fff;text-shadow:0 2px 14px rgba(120,0,50,.3);margin-bottom:18px}
+.paper{background:rgba(255,255,255,.88);color:#5a2238;border-radius:26px;padding:28px 24px;box-shadow:0 20px 50px rgba(90,20,50,.3);text-align:center}
+.paper p{font-size:1.05rem;line-height:1.85;margin:0 0 16px}
+.paper .ask2{font-family:'Dancing Script',cursive;font-size:1.9rem;font-weight:700;line-height:1.4;color:#e0245e;margin:8px 0 0}
+.line{opacity:0;transform:translateY(10px);animation:rise .9s ease forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.actions{display:flex;flex-direction:column;gap:14px;align-items:center;margin-top:26px}
+.yes2{background:#fff;color:var(--rose-deep);font-weight:700;font-size:1.05rem;padding:16px 28px;box-shadow:0 8px 24px rgba(90,20,50,.3);transform-origin:center;max-width:100%}
+.think{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.85);font-weight:500;padding:12px 24px;font-size:.95rem}
+.msg{color:#fff;font-weight:600;font-size:1.1rem;min-height:1.6em;margin:18px 0 0;text-shadow:0 1px 8px rgba(90,20,50,.4)}
+.final{font-family:'Dancing Script',cursive;font-size:3rem;color:#fff;text-shadow:0 2px 14px rgba(120,0,50,.4);margin:24px 0 0;animation:pop .8s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.heart,.sparkle,.bear,.yes{animation:none}.heart{opacity:.35}}
+@media (max-width:380px){.ask{font-size:1.8rem}h1.script{font-size:2.2rem}}
+</style>
+</head>
+<body>
+
+<div class="hearts" id="hearts" aria-hidden="true"></div>
+<div class="sparkles" id="sparkles" aria-hidden="true"></div>
+
+<main>
+<section class="view active" id="page1" aria-live="polite">
+  <div class="card" id="card1">
+    <div id="question">
+      <svg class="bear" viewBox="0 0 200 150" role="img" aria-label="A shy bear peeking over a wall holding a tiny heart">
+        <circle cx="52" cy="38" r="22" fill="#c98b6b"/><circle cx="52" cy="38" r="12" fill="#ffc9d6"/>
+        <circle cx="148" cy="38" r="22" fill="#c98b6b"/><circle cx="148" cy="38" r="12" fill="#ffc9d6"/>
+        <ellipse cx="100" cy="82" rx="68" ry="58" fill="#d9a07f"/>
+        <ellipse cx="100" cy="98" rx="30" ry="22" fill="#f6dcc6"/>
+        <circle cx="76" cy="74" r="7" fill="#3b1f2b"/><circle cx="124" cy="74" r="7" fill="#3b1f2b"/>
+        <circle cx="78" cy="72" r="2.4" fill="#fff"/><circle cx="126" cy="72" r="2.4" fill="#fff"/>
+        <ellipse cx="100" cy="90" rx="9" ry="6.5" fill="#3b1f2b"/>
+        <path d="M92 102 Q100 110 108 102" stroke="#3b1f2b" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="60" cy="94" rx="10" ry="6" fill="#ff8fb3" opacity=".7"/><ellipse cx="140" cy="94" rx="10" ry="6" fill="#ff8fb3" opacity=".7"/>
+        <rect x="0" y="126" width="200" height="30" rx="14" fill="#ffb3cb"/>
+        <ellipse cx="62" cy="126" rx="17" ry="13" fill="#d9a07f"/><ellipse cx="138" cy="126" rx="17" ry="13" fill="#d9a07f"/>
+        <path d="M100 138 C80 122 88 108 100 116 C112 108 120 122 100 138Z" fill="#ff4d85"/>
+      </svg>
+      <h1 class="script">Hey...</h1>
+      <p class="ask">Do you love me?</p>
+      <div class="btns" id="btns">
+        <button class="yes" id="yes">Yes! ❤️</button>
+        <button class="no" id="no">No.</button>
+      </div>
+    </div>
+    <div class="oops hidden" id="oops">
+      <p class="big">😅</p>
+      <p>Oops! Sorry for that... 😅<br>But I hope you live a long, happy, and healthy life! 🌻</p>
+      <button class="reconsider" id="reconsider">Wait, let me reconsider...</button>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="page2">
+  <div class="letter">
+    <h2 class="script">I knew it! 🥰</h2>
+    <div class="paper" id="paper">
+      <p>From the moment I met you, my world changed. You are my best friend, my confidant, and my greatest adventure.</p>
+      <p>I can’t imagine a day without your smile or a future without you in it.</p>
+      <p class="ask2">Gautam Prasad Sah, will you be mine forever? Will you marry me? 💍</p>
+    </div>
+    <div class="actions" id="actions">
+      <button class="yes2" id="yes2">YES! A Thousand Times Yes! 💖</button>
+      <button class="think" id="think">I need to think...</button>
+    </div>
+    <p class="msg" id="msg" aria-live="polite"></p>
+    <p class="final hidden" id="final">She said YES! 🎉</p>
+  </div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+
+  // Floating hearts (page 1) and sparkles (page 2)
+  var hearts=$('hearts'), glyphs=['❤','♥','💗','💕','💖'];
+  for(var i=0;i<22;i++){
+    var h=document.createElement('span'); h.className='heart';
+    h.textContent=glyphs[i%glyphs.length];
+    h.style.left=(Math.random()*100)+'%';
+    h.style.fontSize=(12+Math.random()*22)+'px';
+    h.style.animationDuration=(9+Math.random()*9)+'s';
+    h.style.animationDelay=(-Math.random()*16)+'s';
+    hearts.appendChild(h);
+  }
+  var sp=$('sparkles'); sp.style.opacity=0; sp.style.transition='opacity .9s ease';
+  for(var j=0;j<34;j++){
+    var s=document.createElement('span'); s.className='sparkle'; s.textContent='✦';
+    s.style.left=(Math.random()*100)+'%'; s.style.top=(Math.random()*100)+'%';
+    s.style.fontSize=(8+Math.random()*16)+'px';
+    s.style.animationDuration=(2.5+Math.random()*3)+'s';
+    s.style.animationDelay=(-Math.random()*5)+'s';
+    sp.appendChild(s);
+  }
+
+  // Page 1: No button logic
+  var no=$('no'), btns=$('btns'), dodges=0, noClicks=0, MAX_DODGE=5;
+  function dodge(e){
+    if(dodges>=MAX_DODGE) return;
+    if(e&&e.cancelable) e.preventDefault();
+    dodges++;
+    var w=no.offsetWidth||80, hgt=no.offsetHeight||36, pad=12;
+    var maxX=Math.max(pad,window.innerWidth-w-pad), maxY=Math.max(pad,window.innerHeight-hgt-pad);
+    no.classList.add('dodging');
+    no.style.left=(pad+Math.random()*(maxX-pad))+'px';
+    no.style.top=(pad+Math.random()*(maxY-pad))+'px';
+  }
+  no.addEventListener('pointerenter',dodge);
+  no.addEventListener('touchstart',dodge,{passive:false});
+  no.addEventListener('click',function(){
+    noClicks++;
+    if(noClicks===1){ no.textContent='Are you sure?'; dodges=0; }
+    else { $('question').classList.add('hidden'); $('oops').classList.remove('hidden'); }
+  });
+  $('reconsider').addEventListener('click',function(){
+    noClicks=0; dodges=0; no.textContent='No.';
+    no.classList.remove('dodging'); no.style.left=no.style.top='';
+    $('oops').classList.add('hidden'); $('question').classList.remove('hidden');
+  });
+
+  // Transition to page 2
+  $('yes').addEventListener('click',function(){
+    $('page1').classList.remove('active');
+    $('hearts').style.transition='opacity .9s ease'; $('hearts').style.opacity=0;
+    setTimeout(function(){
+      $('page2').classList.add('active'); $('sparkles').style.opacity=1;
+      $('page2').scrollTop=0;
+      var els=document.querySelectorAll('#paper p');
+      for(var k=0;k<els.length;k++){ els[k].classList.add('line'); els[k].style.animationDelay=(0.5+k*1.1)+'s'; }
+    },700);
+  });
+
+  // Page 2
+  var scale=1, lines=['Take your time, I’m not going anywhere. 😉','Still thinking? I’ll wait. 😉','Okay, the button is getting bigger for a reason... 💖'];
+  $('think').addEventListener('click',function(){
+    scale=Math.min(scale+0.22,1.8);
+    $('yes2').style.transform='scale('+scale+')';
+    $('actions').style.gap=(14+(scale-1)*40)+'px';
+    $('msg').textContent=lines[Math.min(Math.round((scale-1)/0.22)-1,lines.length-1)];
+  });
+  function burst(){
+    if(typeof confetti!=='function') return;
+    var end=Date.now()+3500, colors=['#ff4d85','#ffffff','#ffd6e3','#ffb347','#e0245e'];
+    confetti({particleCount:160,spread:100,origin:{y:.6},colors:colors});
+    (function frame(){
+      confetti({particleCount:5,angle:60,spread:60,origin:{x:0,y:.7},colors:colors});
+      confetti({particleCount:5,angle:120,spread:60,origin:{x:1,y:.7},colors:colors});
+      if(Date.now()<end) requestAnimationFrame(frame);
+    })();
+  }
+  $('yes2').addEventListener('click',function(){
+    $('actions').classList.add('hidden'); $('msg').textContent='';
+    $('final').classList.remove('hidden');
+    burst();
+    setTimeout(function(){ $('final').scrollIntoView({behavior:'smooth',block:'center'}); },200);
+  });
+})();
+</script>
+</body>
+</html>
